@@ -11,7 +11,6 @@ class Property extends Model
 
     protected $fillable = [
         'title',
-        'photo',
         'description',
         'rental_price',
         'address',
@@ -47,5 +46,10 @@ class Property extends Model
     public function setAmenitiesAttribute($value)
     {
         $this->attributes['amenities'] = json_encode($value);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(PropertyImage::class);
     }
 }
