@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Property;
+use App\Models\PropertyImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,6 +15,7 @@ class PropertyController extends Controller
 
         $properties = Property::withCount('comments')
             ->withAvg('comments', 'rating')
+            ->with('images')
             ->when($filter === 'highest_price', function ($query) {
                 return $query->orderBy('rental_price', 'desc');
             })
@@ -41,7 +43,7 @@ class PropertyController extends Controller
     public function show($id)
     {
         $property = Property::withCount('comments as comments_count')
-            ->withAvg('comments', 'rating')
+            ->withAvg('comments', 'rating')->with('images')
             ->findOrFail($id);
 
         return response()->json($property);
@@ -61,18 +63,43 @@ class PropertyController extends Controller
         $property->user_id = Auth::id();
         $property->save();
 
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('property_images', 'public');
+                $property->images()->create(['image_path' => $path]);
+            }
+        }
+
         return response()->json($property, 201);
     }
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'images' => 'nullable|array',
+            'images.*' => 'image|max:2048',
+            'images_to_delete' => 'nullable|array',
+            'images_to_delete.*' => 'integer',
+        ]);
+
         $property = Property::findOrFail($id);
 
         if ($property->user_id !== Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $property->update($request->all());
+        $property->update($request->except(['images', 'images_to_delete']));
+
+        if ($request->has('images_to_delete')) {
+            PropertyImage::whereIn('id', $request->images_to_delete)->delete();
+        }
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('property_images', 'public');
+                $property->images()->create(['image_path' => $path]);
+            }
+        }
         return response()->json($property);
     }
 
