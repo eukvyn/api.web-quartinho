@@ -1,19 +1,36 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\AmenityController;
+use App\Http\Controllers\Auth\AuthenticatedTokenController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
+Route::get('/', function () {
+    return 'welcome to API web quartinho';
 });
+
+Route::post('/register', [RegisteredUserController::class, 'store']);
+Route::post('/login', [AuthenticatedTokenController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [UserController::class, 'profile']);
+    Route::post('/user', [UserController::class, 'updateProfile']);
+    Route::get('/user/comments', [UserController::class, 'userComments']);
+    Route::get('/user/properties', [UserController::class, 'userProperties']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/properties', [PropertyController::class, 'store']);
+    Route::post('/properties/{id}', [PropertyController::class, 'update']);
+    Route::delete('/properties/{id}', [PropertyController::class, 'destroy']);
+    Route::post('/properties/{id}/comments', [CommentController::class, 'store']);
+    Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
+});
+
+Route::get('/properties', [PropertyController::class, 'index']);
+Route::get('/properties/{id}', [PropertyController::class, 'show']);
+Route::get('/properties/{id}/comments', [CommentController::class, 'index']);
+Route::get('/amenities', [AmenityController::class, 'index']);
