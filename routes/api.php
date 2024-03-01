@@ -14,7 +14,12 @@ Route::get('/', function () {
 Route::post('/register', [RegisteredUserController::class, 'store']);
 Route::post('/login', [AuthenticatedTokenController::class, 'login']);
 
-Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'profile']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [UserController::class, 'profile']);
+    Route::post('/user', [UserController::class, 'updateProfile']);
+    Route::get('/user/comments', [UserController::class, 'userComments']);
+    Route::get('/user/properties', [UserController::class, 'userProperties']);
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/properties', [PropertyController::class, 'store']);
