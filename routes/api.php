@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\AmenityController;
 use App\Http\Controllers\Auth\AuthenticatedTokenController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
@@ -32,3 +33,4 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/properties', [PropertyController::class, 'index']);
 Route::get('/properties/{id}', [PropertyController::class, 'show']);
 Route::get('/properties/{id}/comments', [CommentController::class, 'index']);
+Route::get('/amenities', [AmenityController::class, 'index']);

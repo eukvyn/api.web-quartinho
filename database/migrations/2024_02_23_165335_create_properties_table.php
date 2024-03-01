@@ -14,7 +14,6 @@ class CreatePropertiesTable extends Migration
             $table->text('description');
             $table->decimal('rental_price', 8, 2);
             $table->string('address');
-            $table->json('amenities')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
 
