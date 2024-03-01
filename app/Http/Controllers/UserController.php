@@ -55,7 +55,7 @@ class UserController extends Controller
 
     public function userProperties()
     {
-        $properties = Auth::user()->properties()->with('images')->get();
+        $properties = Auth::user()->properties()->with('images', 'amenities')->get();
 
         return response()->json($properties);
     }

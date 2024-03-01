@@ -15,7 +15,7 @@ class PropertyController extends Controller
 
         $properties = Property::withCount('comments')
             ->withAvg('comments', 'rating')
-            ->with('images')
+            ->with('images', 'amenities')
             ->when($filter === 'highest_price', function ($query) {
                 return $query->orderBy('rental_price', 'desc');
             })
@@ -43,7 +43,7 @@ class PropertyController extends Controller
     public function show($id)
     {
         $property = Property::withCount('comments as comments_count')
-            ->withAvg('comments', 'rating')->with('images')
+            ->withAvg('comments', 'rating')->with('images', 'amenities')
             ->findOrFail($id);
 
         return response()->json($property);
@@ -56,6 +56,8 @@ class PropertyController extends Controller
             'description' => 'required|string',
             'rental_price' => 'required|numeric',
             'address' => 'required|string|max:255',
+            'amenities' => 'nullable|array',
+            'amenities.*' => 'exists:amenities,id',
         ]);
 
         $property = new Property();
@@ -70,8 +72,13 @@ class PropertyController extends Controller
             }
         }
 
-        return response()->json($property, 201);
+        if ($request->has('amenities')) {
+            $property->amenities()->sync($request->amenities);
+        }
+
+        return response()->json($property->load('images', 'amenities'), 201);
     }
+
 
     public function update(Request $request, $id)
     {
@@ -80,6 +87,8 @@ class PropertyController extends Controller
             'images.*' => 'image|max:2048',
             'images_to_delete' => 'nullable|array',
             'images_to_delete.*' => 'integer',
+            'amenities' => 'nullable|array',
+            'amenities.*' => 'exists:amenities,id',
         ]);
 
         $property = Property::findOrFail($id);
@@ -88,7 +97,7 @@ class PropertyController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $property->update($request->except(['images', 'images_to_delete']));
+        $property->update($request->except(['images', 'images_to_delete', 'amenities']));
 
         if ($request->has('images_to_delete')) {
             PropertyImage::whereIn('id', $request->images_to_delete)->delete();
@@ -100,7 +109,12 @@ class PropertyController extends Controller
                 $property->images()->create(['image_path' => $path]);
             }
         }
-        return response()->json($property);
+
+        if ($request->has('amenities')) {
+            $property->amenities()->sync($request->amenities);
+        }
+
+        return response()->json($property->load('images', 'amenities'));
     }
 
     public function destroy($id)

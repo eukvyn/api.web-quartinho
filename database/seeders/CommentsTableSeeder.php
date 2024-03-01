@@ -9,23 +9,32 @@ class CommentsTableSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('comments')->insert([
-            [
-                'text' => 'Great place, really enjoyed my stay!',
-                'rating' => 5,
-                'user_id' => 2,
-                'property_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'text' => 'Lovely apartment, very clean and well located.',
-                'rating' => 4,
-                'user_id' => 3,
-                'property_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        $comments = [];
+
+        $numUsers = 3;
+        $numProperties = 3;
+
+        $texts = [
+            'Ótimo lugar, realmente gostei da minha estadia!',
+            'Apartamento adorável, muito limpo e bem localizado.',
+            'Incrível experiência, com certeza voltaria!',
+        ];
+
+        $ratings = [5, 4, 5];
+
+        for ($propertyId = 1; $propertyId <= $numProperties; $propertyId++) {
+            for ($userId = 1; $userId <= $numUsers; $userId++) {
+                $comments[] = [
+                    'text' => $texts[array_rand($texts)],
+                    'rating' => $ratings[array_rand($ratings)],
+                    'user_id' => $userId,
+                    'property_id' => $propertyId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+
+        DB::table('comments')->insert($comments);
     }
 }

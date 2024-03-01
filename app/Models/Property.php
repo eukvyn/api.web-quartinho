@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class Property extends Model
 {
@@ -15,8 +16,17 @@ class Property extends Model
         'rental_price',
         'address',
         'user_id',
-        'amenities',
     ];
+
+    protected $hidden = [
+        'updated_at',
+        'created_at'
+    ];
+
+    public function amenities()
+    {
+        return $this->belongsToMany(Amenity::class);
+    }
 
     public function user()
     {
@@ -38,18 +48,14 @@ class Property extends Model
         return $this->comments()->avg('rating') ?? 0;
     }
 
-    public function getAmenitiesAttribute($value)
-    {
-        return json_decode($value, true);
-    }
-
-    public function setAmenitiesAttribute($value)
-    {
-        $this->attributes['amenities'] = json_encode($value);
-    }
-
     public function images()
     {
         return $this->hasMany(PropertyImage::class);
     }
+
+    public function getCreatedAtFormattedAttribute()
+    {
+        return Carbon::parse($this->attributes['created_at'])->format('d/m/Y');
+    }
+    protected $appends = ['created_at_formatted'];
 }

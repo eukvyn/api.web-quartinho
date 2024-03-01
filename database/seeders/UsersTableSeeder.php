@@ -10,28 +10,30 @@ class UsersTableSeeder extends Seeder
 {
     public function run()
     {
+        $defaultProfileImagePath = 'profile_images/default.png';
+
         DB::table('users')->insert([
             [
-                'name' => 'User One',
-                'email' => 'userone@example.com',
+                'name' => 'João Silva',
+                'email' => 'joao.silva@example.com',
                 'password' => Hash::make('password123'),
-                'profile_image' => null,
+                'profile_image' => $defaultProfileImagePath,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'User Two',
-                'email' => 'usertwo@example.com',
+                'name' => 'Pedro Santos',
+                'email' => 'pedro.santos@example.com',
                 'password' => Hash::make('password123'),
-                'profile_image' => null,
+                'profile_image' => $defaultProfileImagePath,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'User Three',
-                'email' => 'userthree@example.com',
+                'name' => 'Maria Oliveira',
+                'email' => 'maria.oliveira@example.com',
                 'password' => Hash::make('password123'),
-                'profile_image' => null,
+                'profile_image' => $defaultProfileImagePath,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
