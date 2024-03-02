@@ -2,6 +2,8 @@
 
 Este projeto é uma API desenvolvida com Laravel, criada especificamente para ser utilizada por um frontend específico. A aplicação inteira (front e API) foi desenvolvida com o objetivo de cumprir um desafio proposto pela empresa WebQuarto para uma vaga de estágio.
 
+![php](https://img.shields.io/badge/php-v8.2.10-red) ![composer](https://img.shields.io/badge/composer-v2.5.8-blue)
+
 ## Pré-requisitos
 
 - PHP ^8.1
